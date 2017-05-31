@@ -30,7 +30,8 @@ atc-tool 是一个命令行工具
  * -j 是否支持JSON TAG
     - e.g.  true 表示支持JSON TAG
     
-    
+举例：
+
     $ example
     atc-tool orm test user -c="../conf/app.ini" -s ="../users"
     ...
