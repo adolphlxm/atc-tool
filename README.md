@@ -33,16 +33,16 @@ atc-tool 是一个命令行工具
     
     $ example
     atc-tool orm test user -c="../conf/app.ini" -s ="../users"
-    
-    
+    ...
     [ATC] [Trace] 2017/05/31 19:19:39.329806 reverse.go#225: Reverse create ./users/user.go successfully created!
+
 
 `user.go`文件内容如下：
 
 ```go
 package conf
 
-type Test1 struct {
+type User struct {
 	Id     int64 `xorm:"int(11)"`
 	Number int64 `xorm:"int(11)"`
 }
