@@ -69,6 +69,7 @@ func Run(cmd *commands.Command, args []string) int {
 	if err := initOrm(); err != nil {
 		return 1
 	}
+
 	if err := reverse(args[0], args[1], j); err != nil {
 
 	}
@@ -183,16 +184,21 @@ func reverse(aliasName string, tableName string, isJson bool) error {
 		}
 	}
 
-	var dbName string
+	var (
+		dbName string
+		upperK int
+	)
 	for k, v := range tableName {
-		if 0 == k || string(v) == "_" {
-			dbName = strings.ToUpper(string(v))
+		if 0 == k || upperK == k {
+			dbName += strings.ToUpper(string(v))
+		} else if "_" == string(v) {
+			upperK = k + 1
 		} else {
 			dbName += string(v)
 		}
 
 	}
-
+	commands.Logger.Trace("%v",dbName)
 	// Generate the file path
 	// e.g. a/b/c
 
@@ -208,7 +214,7 @@ func reverse(aliasName string, tableName string, isJson bool) error {
 		length := len(generatePath)
 		if length > 0 {
 			if f, _ := os.Stat(fileName + ".go"); f != nil {
-				commands.Logger.Error("%s.go File already exists, please retry after deletion.", s)
+				commands.Logger.Error("%s.go File already exists, please retry after deletion.", fileName)
 				return nil
 			}
 			//generateFile := generatePath[length-1]

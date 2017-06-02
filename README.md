@@ -49,6 +49,12 @@ type User struct {
 }
 
 ```
+
+## 更新日志
+
+* 2017.5 
+    - 修复表名带`_` 大写转换成struct问题
+    
 # LICENSE
 
 ATC is Licensed under the Apache License, Version 2.0 (the "License")
