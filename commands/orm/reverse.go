@@ -198,10 +198,9 @@ func reverse(aliasName string, tableName string, isJson bool) error {
 		}
 
 	}
-	commands.Logger.Trace("%v",dbName)
+
 	// Generate the file path
 	// e.g. a/b/c
-
 	wr := os.Stdout
 	var pkgName string
 	if has := strings.HasSuffix(s, "/"); !has {
