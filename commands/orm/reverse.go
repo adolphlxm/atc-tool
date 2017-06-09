@@ -9,6 +9,7 @@ import (
 	"github.com/adolphlxm/atc"
 	"github.com/adolphlxm/atc-tool/commands"
 	"github.com/adolphlxm/atc-tool/utils"
+	"github.com/adolphlxm/atc/orm"
 )
 
 var (
@@ -45,6 +46,8 @@ func init() {
 	commands.Register(CmdOrm)
 }
 
+var db orm.Orm
+
 // Initialize orm.
 func initOrm() error {
 	// Initialize config
@@ -56,7 +59,7 @@ func initOrm() error {
 
 	atc.Aconfig.Debug = false
 
-	atc.RunOrm()
+	db = atc.RunOrms()
 
 	return err
 }
@@ -81,7 +84,7 @@ func Run(cmd *commands.Command, args []string) int {
 func reverse(aliasName string, tableName string, isJson bool) error {
 	var str string
 
-	engine := atc.Orm.Use(aliasName)
+	engine := db.Use(aliasName)
 	results, _ := engine.Query("show columns from " + tableName)
 
 	for _, res := range results {
@@ -207,8 +210,8 @@ func reverse(aliasName string, tableName string, isJson bool) error {
 		s = s + "/"
 	}
 	fileName :=  s + tableName
-
-	if s != "" {
+	commands.Logger.Error(s)
+	if s != "/" {
 		generatePath := strings.Split(s, "/")
 		length := len(generatePath)
 		if length > 0 {
@@ -224,7 +227,7 @@ func reverse(aliasName string, tableName string, isJson bool) error {
 
 	data := template.FuncMap{"pkgName": pkgName, "dbName": dbName, "dbFiles": template.HTML(str)}
 	if err := utils.Tmpl(dbStruct, data, wr); err != nil {
-		commands.Logger.Error("Reverse %s->%s failed.")
+		commands.Logger.Error("Reverse %s->%s failed.", aliasName, tableName)
 	}
 
 	// TODO go fmt file
