@@ -9,9 +9,10 @@ atc-tool 是一个命令行工具
   **同时你需要安装如下依赖**
   
   ```config 
-    // ATC框架,用于ORM反转及日志支持
-    github.com/adolphlxm/atc
- 
+    // ATC, orm 包
+    github.com/adolphlxm/atc/orm
+    // ATC, logs 日志包
+    github.com/adolphlxm/atc/logs
   ```
    
 ## 命令列表
@@ -19,21 +20,22 @@ atc-tool 是一个命令行工具
 
 ## atc-tool orm
 
-    $ atc-tool orm [dbName] [table] [-c=config path] [-s=Generate the file path] [-j= true|false]
+    $ atc-tool orm [-json] driverName datasourceName tableName [generatedPath]
  
- * dbName 数据库名称
- * table 表名
- * -c ATC配置文件路径
-    - e.g. ../conf/app.ini
- * -s 数据库表反转后生成的具体文件路径
-    - e.g. ../user 则会在该目录下生成一个[表名].go文件
- * -j 是否支持JSON TAG
-    - e.g.  true 表示支持JSON TAG
+ *Options:*
+ 
+ * -json [是否支持JSON TAG]
+    - true or false(默认) 
+ * driverName [数据库驱动]
+ * datasourceName [数据库连接资源]
+ * tableName [表名]
+ * generatedPath [数据库表反转后生成文件]
+    - ../user 则会在该目录下生成一个[表名].go文件
     
 举例：
 
     $ example
-    atc-tool orm test user -c="../conf/app.ini" -s ="../users"
+    atc-tool orm mysql "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8" user ./model/
     ...
     [ATC] [Trace] 2017/05/31 19:19:39.329806 reverse.go#225: Reverse create ./users/user.go successfully created!
 
@@ -49,6 +51,26 @@ type User struct {
 }
 
 ```
+
+## atc-tool thrift
+
+* 依赖thrift
+* 解决问题
+    - 由于ATC框架修改了Thrift go server源码
+    - 服务端thrift源码 引用的是 `github.com/adolphlxm/rpc/thrift/lib/thrift`包
+    - 使用该工具生成，可自动替换 thrift 生成.go文件的引用包问题。
+
+thrift命令行工具，用于 thrift IDL .go 文件生产
+
+    $ atc-tool thrift [options] file
+    
+具体thrift命令可使用 `thrift --help` 查看
+
+举例：
+
+    $ atc-tool thrift -r --gen go xxx.thrift
+    
+即可在该目录生成一个gen-go/xxx 的文件
 
 ## 更新日志
 

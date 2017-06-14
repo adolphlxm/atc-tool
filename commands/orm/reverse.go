@@ -5,29 +5,31 @@ import (
 	"html/template"
 	"os"
 	"strings"
+	"fmt"
 
-	"github.com/adolphlxm/atc"
 	"github.com/adolphlxm/atc-tool/commands"
 	"github.com/adolphlxm/atc-tool/utils"
+
 	"github.com/adolphlxm/atc/orm"
+	_ "github.com/adolphlxm/atc/orm/xorm"
+	"encoding/json"
 )
 
 var (
-	c string
-	s string
 	j bool
 )
 
 var CmdOrm = &commands.Command{
-	UsageLine: "orm dbName table [-c=config path] [-s=Generate the file path] [-j= true|false]",
-	Short:     "reverse a database table to codes",
-	Long: `
-according database's tables and columns to generate codes for Go.
-    dbName            Database aliasname, now supported four: mysql mymysql sqlite3 postgres
-    table	      Database table name
-    -c		      Database config path
+	Usage: "orm [-json] driverName datasourceName tableName [generatedPath]",
+	Use:   "reverse a database table to codes",
+	Options: `
+
     -s                Generated one go file for every table
-    -j                Support Json tag
+    driverName        Database driver name, now supported four: mysql mymysql sqlite3 postgres
+    datasourceName    Database connection uri, for detail infomation please visit driver's project page
+    tmplPath          Template dir for generated. the default templates dir has provide 1 template
+    generatedPath     This parameter is optional, if blank, the default value is model, then will
+                      generated all codes in model dir
 `,
 	Run: Run,
 }
@@ -40,48 +42,73 @@ type {{.dbName}} struct {
 `
 
 func init() {
-	CmdOrm.Flag.StringVar(&c, "c", "", "Get database configuration file")
-	CmdOrm.Flag.StringVar(&s, "s", "", "Generated one go file for every table")
-	CmdOrm.Flag.BoolVar(&j, "j", false, "Support Json tag true or false.")
+	CmdOrm.Flag.BoolVar(&j, "json", false, "Support Json tag true or false.")
 	commands.Register(CmdOrm)
 }
 
 var db orm.Orm
 
-// Initialize orm.
-func initOrm() error {
-	// Initialize config
-	err := atc.ParseConfig(c)
-	if err != nil {
-		commands.Logger.Error("%v", err.Error())
-		return err
-	}
-
-	atc.Aconfig.Debug = false
-
-	db = atc.RunOrms()
-
-	return err
+type OrmConfig struct {
+	Driver   string `json:"driver"`
+	Host     string `json:"host"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	DbName   string `json:"dbname"`
+	LogLevel string `json:"loglevel"`
 }
 
 func Run(cmd *commands.Command, args []string) int {
-	if len(args) < 2 {
-
-	}
-	cmd.Flag.Parse(args[2:])
-	if err := initOrm(); err != nil {
+	if len(args) < 3 {
+		fmt.Println("Usage: orm [-json] driverName datasourceName tableName [generatedPath]")
+		fmt.Println(commands.ErrUseError)
 		return 1
 	}
 
-	if err := reverse(args[0], args[1], j); err != nil {
+	cmd.Flag.Parse(args)
+	args = cmd.Flag.Args()
+	if j {
+		args = args[1:]
+	}
 
+	// Datasource parsing.
+	sourceName := args[1]
+	source1 := strings.Split(sourceName,"@") // root:123	tcp(%s)/test?charset=utf8
+	source2 := strings.Split(source1[1],"/") // tcp(%s)	test?charset=utf8
+	lenTcp := len(source2[0])
+	user := strings.Split(source1[0],":")
+	i1 := strings.Index(source2[1],"?")
+	cf := &OrmConfig{
+		Driver:args[0],
+		Host:source2[0][4:lenTcp-1],
+		User:user[0],
+		Password:user[1],
+		DbName:source2[1][:i1],
+		LogLevel:"LOG_DEBUG",
+	}
+	cfJson, err := json.Marshal(cf)
+	if err != nil {
+		commands.Logger.Error("datasourceName json err :%v", err.Error())
+		return 1
+	}
+
+	db, _ = orm.NewOrm("xorm")
+	if err := db.Open(cf.DbName,string(cfJson)); err != nil {
+		//commands.Logger.Error("init database orm err :%v", err.Error())
+		return 1
+	}
+	var gen string
+	if len(args) > 3 {
+		gen = args[3]
+	}
+	if err := reverse(cf.DbName, args[2], gen, j); err != nil {
+		return 1
 	}
 
 	return 2
 }
 
 //生成表结构
-func reverse(aliasName string, tableName string, isJson bool) error {
+func reverse(aliasName, tableName, g string, isJson bool) error {
 	var str string
 
 	engine := db.Use(aliasName)
@@ -206,13 +233,13 @@ func reverse(aliasName string, tableName string, isJson bool) error {
 	// e.g. a/b/c
 	wr := os.Stdout
 	var pkgName string
-	if has := strings.HasSuffix(s, "/"); !has {
-		s = s + "/"
+	if has := strings.HasSuffix(g, "/"); !has {
+		g = g + "/"
 	}
-	fileName :=  s + tableName
-	commands.Logger.Error(s)
-	if s != "/" {
-		generatePath := strings.Split(s, "/")
+	fileName := g + tableName
+
+	if g != "/" {
+		generatePath := strings.Split(g, "/")
 		length := len(generatePath)
 		if length > 0 {
 			if f, _ := os.Stat(fileName + ".go"); f != nil {
@@ -231,10 +258,10 @@ func reverse(aliasName string, tableName string, isJson bool) error {
 	}
 
 	// TODO go fmt file
-	if s != "" {
-		commands.Logger.Trace("Reverse create %s.go successfully created!", fileName)
+	if g != "/" {
+		commands.Logger.Trace("Reverse create %s.go successfully!", fileName)
 	} else {
-		commands.Logger.Trace("Reverse successfully created!")
+		commands.Logger.Trace("Reverse struct successfully!")
 	}
 	return nil
 }
