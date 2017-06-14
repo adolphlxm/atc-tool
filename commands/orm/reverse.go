@@ -2,17 +2,17 @@ package orm
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"os"
 	"strings"
-	"fmt"
 
 	"github.com/adolphlxm/atc-tool/commands"
 	"github.com/adolphlxm/atc-tool/utils"
 
+	"encoding/json"
 	"github.com/adolphlxm/atc/orm"
 	_ "github.com/adolphlxm/atc/orm/xorm"
-	"encoding/json"
 )
 
 var (
@@ -72,18 +72,18 @@ func Run(cmd *commands.Command, args []string) int {
 
 	// Datasource parsing.
 	sourceName := args[1]
-	source1 := strings.Split(sourceName,"@") // root:123	tcp(%s)/test?charset=utf8
-	source2 := strings.Split(source1[1],"/") // tcp(%s)	test?charset=utf8
+	source1 := strings.Split(sourceName, "@") // root:123	tcp(%s)/test?charset=utf8
+	source2 := strings.Split(source1[1], "/") // tcp(%s)	test?charset=utf8
 	lenTcp := len(source2[0])
-	user := strings.Split(source1[0],":")
-	i1 := strings.Index(source2[1],"?")
+	user := strings.Split(source1[0], ":")
+	i1 := strings.Index(source2[1], "?")
 	cf := &OrmConfig{
-		Driver:args[0],
-		Host:source2[0][4:lenTcp-1],
-		User:user[0],
-		Password:user[1],
-		DbName:source2[1][:i1],
-		LogLevel:"LOG_DEBUG",
+		Driver:   args[0],
+		Host:     source2[0][4 : lenTcp-1],
+		User:     user[0],
+		Password: user[1],
+		DbName:   source2[1][:i1],
+		LogLevel: "LOG_DEBUG",
 	}
 	cfJson, err := json.Marshal(cf)
 	if err != nil {
@@ -92,7 +92,7 @@ func Run(cmd *commands.Command, args []string) int {
 	}
 
 	db, _ = orm.NewOrm("xorm")
-	if err := db.Open(cf.DbName,string(cfJson)); err != nil {
+	if err := db.Open(cf.DbName, string(cfJson)); err != nil {
 		//commands.Logger.Error("init database orm err :%v", err.Error())
 		return 1
 	}
