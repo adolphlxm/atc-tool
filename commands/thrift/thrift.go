@@ -34,7 +34,7 @@ func Run(cmd *commands.Command, args []string) int {
 	i := strings.LastIndex(gen, "/")
 	thriftGenName := gen[i+1 : i+6]
 	helper := utils.ReplaceHelper{
-		Root:    "./gen-go/" + thriftGenName,
+		Root:    "./gen-go-go/" + thriftGenName,
 		OldText: "git.apache.org/thrift.git/lib/go/thrif",
 		NewText: "github.com/adolphlxm/atc/rpc/thrift/lib/thrif",
 	}

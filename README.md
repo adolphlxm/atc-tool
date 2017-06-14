@@ -17,6 +17,7 @@ atc-tool 是一个命令行工具
    
 ## 命令列表
 * orm 数据库表字段反转,生产.go文件
+* thrift 定义IDL文件生成.go源码包
 
 ## atc-tool orm
 
