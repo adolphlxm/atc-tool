@@ -77,6 +77,8 @@ thrift命令行工具，用于 thrift IDL .go 文件生产
 
 * 2017.5 
     - 修复表名带`_` 大写转换成struct问题
+* 2017.6
+    - 优化生成数据表反转代码格式化(go fmt file.)
     
 # LICENSE
 
