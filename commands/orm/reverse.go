@@ -259,6 +259,11 @@ func reverse(aliasName, tableName, g string, isJson bool) error {
 
 	// TODO go fmt file
 	if g != "/" {
+		// Go fmt
+		_, err := utils.ExeCmd("go","fmt", fileName + ".go")
+		if err != nil {
+			commands.Logger.Warn("Reverse go fmt %s.go failed. err:%s",fileName,err.Error())
+		}
 		commands.Logger.Trace("Reverse create %s.go successfully!", fileName)
 	} else {
 		commands.Logger.Trace("Reverse struct successfully!")
