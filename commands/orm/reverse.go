@@ -13,6 +13,7 @@ import (
 	"encoding/json"
 	"github.com/adolphlxm/atc/orm"
 	_ "github.com/adolphlxm/atc/orm/xorm"
+	"github.com/adolphlxm/atc/logs"
 )
 
 var (
@@ -87,7 +88,7 @@ func Run(cmd *commands.Command, args []string) int {
 	}
 	cfJson, err := json.Marshal(cf)
 	if err != nil {
-		commands.Logger.Error("datasourceName json err :%v", err.Error())
+		logs.Error("datasourceName json err :%v", err.Error())
 		return 1
 	}
 
@@ -243,7 +244,7 @@ func reverse(aliasName, tableName, g string, isJson bool) error {
 		length := len(generatePath)
 		if length > 0 {
 			if f, _ := os.Stat(fileName + ".go"); f != nil {
-				commands.Logger.Error("%s.go File already exists, please retry after deletion.", fileName)
+				logs.Error("%s.go File already exists, please retry after deletion.", fileName)
 				return nil
 			}
 			//generateFile := generatePath[length-1]
@@ -254,7 +255,7 @@ func reverse(aliasName, tableName, g string, isJson bool) error {
 
 	data := template.FuncMap{"pkgName": pkgName, "dbName": dbName, "dbFiles": template.HTML(str)}
 	if err := utils.Tmpl(dbStruct, data, wr); err != nil {
-		commands.Logger.Error("Reverse %s->%s failed.", aliasName, tableName)
+		logs.Error("Reverse %s->%s failed.", aliasName, tableName)
 	}
 
 	// TODO go fmt file
@@ -262,11 +263,11 @@ func reverse(aliasName, tableName, g string, isJson bool) error {
 		// Go fmt
 		_, err := utils.ExeCmd("go","fmt", fileName + ".go")
 		if err != nil {
-			commands.Logger.Warn("Reverse go fmt %s.go failed. err:%s",fileName,err.Error())
+			logs.Warn("Reverse go fmt %s.go failed. err:%s",fileName,err.Error())
 		}
-		commands.Logger.Trace("Reverse create %s.go successfully!", fileName)
+		logs.Trace("Reverse create %s.go successfully!", fileName)
 	} else {
-		commands.Logger.Trace("Reverse struct successfully!")
+		logs.Trace("Reverse struct successfully!")
 	}
 	return nil
 }

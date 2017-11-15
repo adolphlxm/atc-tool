@@ -6,6 +6,7 @@ import (
 
 	"github.com/adolphlxm/atc-tool/commands"
 	"github.com/adolphlxm/atc-tool/utils"
+	"github.com/adolphlxm/atc/logs"
 )
 
 var CmdThrift = &commands.Command{
@@ -24,7 +25,7 @@ func init() {
 func Run(cmd *commands.Command, args []string) int {
 	b, err := utils.ExeCmd("thrift", args...)
 	if err != nil {
-		commands.Logger.Error("%s", err.Error())
+		logs.Error("%s", err.Error())
 		return 1
 	}
 
@@ -41,7 +42,7 @@ func Run(cmd *commands.Command, args []string) int {
 	}
 	err = helper.DoWrok()
 	if err != nil {
-		commands.Logger.Error("Replace thrift package err:%v", err)
+		logs.Error("Replace thrift package err:%v", err)
 		return 1
 	}
 

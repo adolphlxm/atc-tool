@@ -10,11 +10,10 @@ import (
 var ErrUseError = "Use atc-tool -help for a list"
 
 var AdapterCommands = []*Command{}
-var Logger *logs.AtcLogger
 
 func Register(cmd *Command) {
 	if cmd == nil {
-		Logger.Fatal("ATC command: Register command is nil")
+		logs.Fatal("ATC command: Register command is nil")
 	}
 	AdapterCommands = append(AdapterCommands, cmd)
 }
@@ -36,11 +35,4 @@ func (c *Command) Name() string {
 		name = name[:i]
 	}
 	return name
-}
-
-func init(){
-	// Initialize log
-	Logger = logs.NewLogger(10000)
-	Logger.SetHandler("stdout", ``)
-	Logger.SetLevel(logs.LevelDebug)
 }
