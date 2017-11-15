@@ -12,7 +12,7 @@ import (
 	"runtime"
 )
 
-const VERSION = "0.2.0"
+const VERSION = "0.3.0"
 
 func init() {
 	version := flag.Bool("v", false, "Use -v <current version>")
