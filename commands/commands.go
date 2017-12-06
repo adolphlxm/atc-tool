@@ -11,6 +11,10 @@ var ErrUseError = "Use atc-tool -help for a list"
 
 var AdapterCommands = []*Command{}
 
+func init() {
+	logs.SetLogger(logs.AdapterStdout)
+}
+
 func Register(cmd *Command) {
 	if cmd == nil {
 		logs.Fatal("ATC command: Register command is nil")
@@ -19,10 +23,10 @@ func Register(cmd *Command) {
 }
 
 type Command struct {
-	Run       func(cmd *Command, args []string) int
-	Usage string
+	Run     func(cmd *Command, args []string) int
+	Usage   string
 	Use     string
-	Options      string
+	Options string
 
 	Flag flag.FlagSet
 }

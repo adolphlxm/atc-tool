@@ -25,15 +25,21 @@ func init() {
 func Run(cmd *commands.Command, args []string) int {
 	b, err := utils.ExeCmd("thrift", args...)
 	if err != nil {
-		logs.Error("%s", err.Error())
+		logs.Error("cmd err:%s", err.Error())
 		return 1
+	}
+
+	if len(args) < 3 {
+		fmt.Println("Usage: thrift [options] file")
+		fmt.Println(commands.ErrUseError)
+		logs.Error("Argument thrift [options] is missing")
 	}
 
 	// Replace thrift package
 	gen := args[3]
 	i1 := strings.LastIndex(gen, "/")
 	i2 := strings.LastIndex(gen, ".")
-	thriftGenName := gen[i1+1:i2]
+	thriftGenName := gen[i1+1 : i2]
 
 	helper := utils.ReplaceHelper{
 		Root:    "./gen-go/" + thriftGenName,
@@ -50,4 +56,3 @@ func Run(cmd *commands.Command, args []string) int {
 
 	return 2
 }
-

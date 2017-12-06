@@ -11,9 +11,9 @@ import (
 	"github.com/adolphlxm/atc-tool/utils"
 
 	"encoding/json"
+	"github.com/adolphlxm/atc/logs"
 	"github.com/adolphlxm/atc/orm"
 	_ "github.com/adolphlxm/atc/orm/xorm"
-	"github.com/adolphlxm/atc/logs"
 )
 
 var (
@@ -62,6 +62,7 @@ func Run(cmd *commands.Command, args []string) int {
 	if len(args) < 3 {
 		fmt.Println("Usage: orm [-json] driverName datasourceName tableName [generatedPath]")
 		fmt.Println(commands.ErrUseError)
+		logs.Error("Argument orm ... is missing")
 		return 1
 	}
 
@@ -116,14 +117,6 @@ func reverse(aliasName, tableName, g string, isJson bool) error {
 	results, _ := engine.Query("show columns from " + tableName)
 
 	for _, res := range results {
-		//fmt.Println("Field->" + string(res["Field"]))
-		//fmt.Println("Key->" + string(res["Key"]))
-		//fmt.Println("Extra->" + string(res["Extra"]))
-		//fmt.Println("Type->" + string(res["Type"]))
-		//fmt.Println("NUll->" + string(res["Null"]))
-		//fmt.Println("Default->" + string(res["Default"]))
-		//fmt.Println("========================")
-
 		//field
 		fieldUpper := ""
 		field := string(res["Field"])
@@ -261,9 +254,9 @@ func reverse(aliasName, tableName, g string, isJson bool) error {
 	// TODO go fmt file
 	if g != "/" {
 		// Go fmt
-		_, err := utils.ExeCmd("go","fmt", fileName + ".go")
+		_, err := utils.ExeCmd("go", "fmt", fileName+".go")
 		if err != nil {
-			logs.Warn("Reverse go fmt %s.go failed. err:%s",fileName,err.Error())
+			logs.Warn("Reverse go fmt %s.go failed. err:%s", fileName, err.Error())
 		}
 		logs.Trace("Reverse create %s.go successfully!", fileName)
 	} else {

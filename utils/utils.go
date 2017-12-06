@@ -1,12 +1,31 @@
 package utils
 
 import (
+	"fmt"
 	"html/template"
 	"io"
-	"os/exec"
-	"fmt"
 	"io/ioutil"
+	"os/exec"
+	"os"
+	"runtime"
+	"path/filepath"
+	"strings"
+	"errors"
 )
+
+// WriteToFile creates a file and writes content to it
+func WriteToFile(filename, content string) {
+	f, err := os.Create(filename)
+	if err != nil {
+
+	}
+	defer f.Close()
+	_, err = f.WriteString(content)
+	if err != nil {
+
+	}
+}
+
 
 // 模板替换
 func Tmpl(text string, data interface{}, wr io.Writer) error {
@@ -45,7 +64,41 @@ func ExeCmd(name string, arg ...string) ([]byte, error) {
 		return nil, fmt.Errorf("ReadAll stdout: %s", err.Error())
 	}
 	if err := cmd.Wait(); err != nil {
-		return nil, fmt.Errorf("%s:err:%s", bytesErr,err.Error())
+		return nil, fmt.Errorf("%s:err:%s", bytesErr, err.Error())
 	}
 	return bytes, nil
+}
+
+func CheckEnv(appname string) (packpath string, err error) {
+	gopath := os.Getenv("GOPATH")
+	if gopath == "" && strings.Compare(runtime.Version(), "go1.8") >= 0 {
+		gopath = DefaultGOPATH()
+	}
+
+	currpath, _ := os.Getwd()
+	currpath = filepath.Join(currpath, appname)
+	gopathStr := filepath.SplitList(gopath)
+
+	for _, gpath := range gopathStr {
+		gsrcpath := filepath.Join(gpath, "src")
+		if strings.HasPrefix(strings.ToLower(currpath), strings.ToLower(gsrcpath)) {
+			packpath = strings.Replace(currpath[len(gsrcpath)+1:], string(filepath.Separator), "/", -1)
+			return
+		}
+	}
+
+	return packpath, errors.New("You current workdir is not inside $GOPATH/src.")
+}
+
+func DefaultGOPATH() string {
+	env := "HOME"
+	if runtime.GOOS == "windows" {
+		env = "USERPROFILE"
+	} else if runtime.GOOS == "plan9" {
+		env = "home"
+	}
+	if home := os.Getenv(env); home != "" {
+		return filepath.Join(home, "go")
+	}
+	return ""
 }

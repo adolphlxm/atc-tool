@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"path/filepath"
-	"os"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
 )
 

@@ -4,22 +4,24 @@ import (
 	"flag"
 	"os"
 	"time"
+	"runtime"
+	"fmt"
 
+	"github.com/adolphlxm/atc-tool/commands"
 	_ "github.com/adolphlxm/atc-tool/commands/orm"
 	_ "github.com/adolphlxm/atc-tool/commands/thrift"
-	"github.com/adolphlxm/atc-tool/commands"
-	"fmt"
-	"runtime"
+	_ "github.com/adolphlxm/atc-tool/commands/new"
+
 )
 
-const VERSION = "0.3.0"
+const VERSION = "0.5.0"
 
 func init() {
 	version := flag.Bool("v", false, "Use -v <current version>")
 	flag.Parse()
 	// Show version
 	if *version {
-		fmt.Println("atc-tool version",VERSION, runtime.GOOS +"/" + runtime.GOARCH)
+		fmt.Println("atc-tool version", VERSION, runtime.GOOS+"/"+runtime.GOARCH)
 		os.Exit(0)
 	}
 }
