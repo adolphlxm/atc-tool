@@ -25,6 +25,25 @@ atc-tool 是一个命令行工具
 
     $ atc-tool new [appname]
 
+```
+├── conf [配置文件目录]
+│   ├── app.ini [核心配置文件]
+│   └── error.ini [错误码文件]
+├── bin [可执行文件目录]
+├── src [源码目录]
+│   ├── api [RESTFul API 目录]
+│         ├── V1 [版本目录]
+│         └── router.go [路由文件]
+│   └── model [DB目录]
+│   └── service [服务目录]
+│   └── thrift [RPC]
+│         ├── idl [存放Thrift IDL文件目录]
+│         ├── gen-go [存放Thrift 生成 go文件目录]
+│         ├── ...(.go)
+│         └── router.go [路由文件]
+└── atc.go [运行主程序文件]
+```
+
 ## atc-tool orm
 
     $ atc-tool orm [-json] driverName datasourceName tableName [generatedPath]
