@@ -16,8 +16,9 @@ atc-tool 是一个命令行工具
   ```
    
 ## 命令列表
-* orm 数据库表字段反转,生产.go文件
-* thrift 定义IDL文件生成.go源码包
+* atc-tool orm 数据库表字段反转,生产.go文件
+* atc-tool thrift 定义IDL文件生成.go源码包
+* atc-tool new 创建一个项目
 
 ## atc-tool orm
 
@@ -73,12 +74,19 @@ thrift命令行工具，用于 thrift IDL .go 文件生产
     
 即可在该目录生成一个gen-go/xxx 的文件
 
+## atc-tool new
+创建一个ATC项目
+
+    $ atc-tool new [appname]
+
 ## 更新日志
 
 * 2017.5 
     - 修复表名带`_` 大写转换成struct问题
 * 2017.6
     - 优化生成数据表反转代码格式化(go fmt file.)
+* 2017.12
+    - 增加`new`创新新项目命令
     
 # LICENSE
 
