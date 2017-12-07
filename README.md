@@ -2,18 +2,16 @@
 
 atc-tool 是一个命令行工具
 
-## 安装ATC
+## 安装ATC-TOOL
+
+**安装命令**
 
     go get github.com/adolphlxm/atc-tool
-    
-  **同时你需要安装如下依赖**
-  
-  ```config 
-    // ATC, orm 包
-    github.com/adolphlxm/atc/orm
-    // ATC, logs 日志包
-    github.com/adolphlxm/atc/logs
-  ```
+
+**也可通过下载源码安装(避免网络问题获取包失败)**
+
+    git clone https://github.com/adolphlxm/atc-tool.git ./atc-tool
+    go install ./atc-tool
    
 ## 命令列表
 * atc-tool new 创建一个项目
