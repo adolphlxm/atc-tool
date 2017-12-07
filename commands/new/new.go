@@ -229,7 +229,7 @@ func init() {
 
 		// V1版本测试
 		v1.AddRouter("api", &ApiHandler{})
-		v1.AddRouter("api2.{userid:[0-9]?}", &Api2Handler{})
+		v1.AddRouter("api2.{userid:[0-9]*}", &Api2Handler{})
 		v1.AddRouter("api2.test", &Api2TestHandler{})
 	}
 
