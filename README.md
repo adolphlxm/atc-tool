@@ -4,11 +4,11 @@ atc-tool 是一个命令行工具
 
 ## 安装ATC-TOOL
 
-**安装命令**
+**通过GO命令安装**
 
     go get github.com/adolphlxm/atc-tool
 
-**也可通过下载源码安装(避免网络问题获取包失败)**
+**通过源码安装**
 
     git clone https://github.com/adolphlxm/atc-tool.git ./atc-tool
     go install ./atc-tool
@@ -41,6 +41,14 @@ atc-tool 是一个命令行工具
 │         └── router.go [路由文件]
 └── atc.go [运行主程序文件]
 ```
+
+启动运行后，可通过以下生成的RESTFul HTTP API 访问：
+* http://localhost/api
+* http://localhost/api2
+* http://localhost/api2/123
+* http://localhost/ap2/test
+
+来验证创建的项目DEMO是否通过
 
 ## atc-tool orm
 
