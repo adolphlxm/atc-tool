@@ -43,10 +43,10 @@ atc-tool 是一个命令行工具
 ```
 
 启动运行后，可通过以下生成的RESTFul HTTP API 访问：
-* http://localhost/api
-* http://localhost/api2
-* http://localhost/api2/123
-* http://localhost/ap2/test
+* http://localhost/V1/api
+* http://localhost/V1/api2
+* http://localhost/V1/api2/123
+* http://localhost/V1/ap2/test
 
 来验证创建的项目DEMO是否通过
 
