@@ -8,9 +8,9 @@ import (
 	"fmt"
 
 	"github.com/adolphlxm/atc-tool/commands"
+	_ "github.com/adolphlxm/atc-tool/commands/new"
 	_ "github.com/adolphlxm/atc-tool/commands/orm"
 	_ "github.com/adolphlxm/atc-tool/commands/thrift"
-	_ "github.com/adolphlxm/atc-tool/commands/new"
 
 )
 
@@ -32,13 +32,16 @@ func main() {
 
 	args := flag.Args()
 	if len(args) < 1 {
+		commands.Usage()
 		os.Exit(2)
 		return
 	}
 
 	// Help
 	if args[0] == "help" {
-
+		commands.Help(args[1:])
+		os.Exit(2)
+		return
 	}
 
 	for _, c := range commands.AdapterCommands {

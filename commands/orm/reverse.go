@@ -24,13 +24,11 @@ var CmdOrm = &commands.Command{
 	Usage: "orm [-json] driverName datasourceName tableName [generatedPath]",
 	Use:   "reverse a database table to codes",
 	Options: `
-
-    -s                Generated one go file for every table
-    driverName        Database driver name, now supported four: mysql mymysql sqlite3 postgres
-    datasourceName    Database connection uri, for detail infomation please visit driver's project page
-    tmplPath          Template dir for generated. the default templates dir has provide 1 template
-    generatedPath     This parameter is optional, if blank, the default value is model, then will
-                      generated all codes in model dir
+    -json             true|false,Generate the struct json tag tag
+    driverName        Database driver name, supported: mysql mymysql sqlite3 postgres
+    datasourceName    Database connection uri,e.g.(root:123456@tcp(127.0.0.1:3306)/test?charset=utf8)
+    tableName         Database table name
+    generatedPath     Generated path
 `,
 	Run: Run,
 }
