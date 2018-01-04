@@ -14,7 +14,7 @@ import (
 
 )
 
-const VERSION = "0.6.0"
+const VERSION = "0.6.1"
 
 func init() {
 	version := flag.Bool("v", false, "Use -v <current version>")
