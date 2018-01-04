@@ -21,17 +21,16 @@ The command "new" creates a folder named [appname] and generates the following s
 │   ├── app.ini [核心配置文件]
 │   └── error.ini [错误码文件]
 ├── bin [可执行文件目录]
-├── src [源码目录]
-│   ├── api [RESTFul API 目录]
-│         ├── V1 [版本目录]
-│         └── router.go [路由文件]
-│   └── model [DB目录]
-│   └── service [服务目录]
-│   └── thrift [RPC]
-│         ├── idl [存放Thrift IDL文件目录]
-│         ├── gen-go [存放Thrift 生成 go文件目录]
-│         ├── ...(.go)
-│         └── router.go [路由文件]
+│── api [RESTFul API 目录]
+│     ├── V1 [版本目录]
+│     └── router.go [路由文件]
+│── model [DB目录]
+│── service [服务目录]
+│── thrift [RPC]
+│    ├── idl [存放Thrift IDL文件目录]
+│    ├── gen-go [存放Thrift 生成 go文件目录]
+│    ├── ...(.go)
+│    └── router.go [路由文件]
 └── atc.go [运行主程序文件]
 `,
 	Run: Run,
@@ -39,7 +38,7 @@ The command "new" creates a folder named [appname] and generates the following s
 
 var atcgo = `package main
 import (
-	_ "{{.Appname}}/src/api"
+	_ "{{.Appname}}/api"
 	"github.com/adolphlxm/atc"
 )
 func main() {
@@ -291,27 +290,26 @@ func Run(cmd *commands.Command, args []string) int {
 	utils.WriteToFile(path.Join(apppath,"conf","error.ini"),"")
 	// Create bin
 	os.Mkdir(path.Join(apppath, "bin"),0755)
-	// Create src
-	os.Mkdir(path.Join(apppath, "src"),0755)
-	// Create src/api
-	os.Mkdir(path.Join(apppath, "src","api"),0755)
-	utils.WriteToFile(path.Join(apppath,"src","api","api.go"),restful_api)
-	utils.WriteToFile(path.Join(apppath,"src","api","routers.go"),restful_routers)
+
+	// Create api
+	os.Mkdir(path.Join(apppath,"api"),0755)
+	utils.WriteToFile(path.Join(apppath,"api","api.go"),restful_api)
+	utils.WriteToFile(path.Join(apppath,"api","routers.go"),restful_routers)
 	// Create src/model
-	os.Mkdir(path.Join(apppath, "src","model"),0755)
+	os.Mkdir(path.Join(apppath, "model"),0755)
 	// Create src/service
-	os.Mkdir(path.Join(apppath, "src","service"),0755)
+	os.Mkdir(path.Join(apppath, "service"),0755)
 	// Create src/thrift
-	os.Mkdir(path.Join(apppath, "src","thrift"),0755)
-	os.Mkdir(path.Join(apppath, "src","thrift","gen-go"),0755)
-	os.Mkdir(path.Join(apppath, "src","thrift","idl"),0755)
+	os.Mkdir(path.Join(apppath, "thrift"),0755)
+	os.Mkdir(path.Join(apppath, "thrift","gen-go"),0755)
+	os.Mkdir(path.Join(apppath, "thrift","idl"),0755)
 	// Create atc.go
-	utils.WriteToFile(path.Join(apppath, "src","atc.go"),strings.Replace(atcgo,"{{.Appname}}",packpath,-1))
+	utils.WriteToFile(path.Join(apppath, apppath + ".go"),strings.Replace(atcgo,"{{.Appname}}",packpath,-1))
 
 
 	// lwgo
 	// Create src/thrift
 	os.Mkdir(path.Join(apppath, "vendor"),0755)
-	logs.Trace("'%s' project created successfully", apppath)
+	logs.Tracef("'%s' project created successfully", apppath)
 	return 2
 }
