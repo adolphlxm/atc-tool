@@ -118,6 +118,8 @@ func reverse(aliasName, tableName, g string, isJson bool) error {
 		//field
 		fieldUpper := ""
 		field := string(res["Field"])
+		fmt.Println(res)
+		fmt.Println(string(res["Type"]))
 		isUpper := false
 		for k, v := range res["Field"] {
 			if k == 0 {
@@ -149,9 +151,9 @@ func reverse(aliasName, tableName, g string, isJson bool) error {
 
 			switch {
 			case bytes.HasPrefix(res["Type"], []byte("int")):
-				dbType = "int64"
+				dbType = "int32"
 				if isUnsigned {
-					dbType = "uint64"
+					dbType = "uint32"
 				}
 			case bytes.HasPrefix(res["Type"], []byte("smallint")):
 				dbType = "int16"

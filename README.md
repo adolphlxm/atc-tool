@@ -62,6 +62,30 @@ atc-tool 是一个命令行工具
  * tableName [表名]
  * generatedPath [数据库表反转后生成文件]
     - ../user 则会在该目录下生成一个[表名].go文件
+
+ **MYSQL对应类型生成映射说明**
+
+ |MYSQL类型|属性|GO生成类型|取值范围|
+ |:----    |:---|:----- |-----   |
+ |int |signed  |int32 |-2147483648 ~ 2147483647   |
+ |int |unsigned  |uint32 | 0 ~ 4294967295    |
+ |smallint |signed  |int16 | -32768 ~ 32767    |
+ |smallint |unsigned  |uint16 | 0 ~ 65535    |
+ |tinyint |signed  |int8 | -128 ~ 127    |
+ |tinyint |unsigned  |byte(uint8) | 0 ~ 255    |
+ |bigint |signed  |int64 | -9223372036854776808 ~ 9223372036854775807    |
+ |bigint |unsigned  |uint64 | 0 ~ 18446744073709551615    |
+ |mediumint |signed  |int32 | -2147483648 ~ 2147483647    |
+ |mediumint |unsigned  |uint32 | 0 ~ 4294967295    |
+ |float |--  |float64 | --    |
+ |double |--  |float64 | --    |
+ |decimal |--  |string |--   |
+ |date |--  |string |--    |
+ |datetime |--  |time.Time |--    |
+ |time |--  |string |--    |
+ |varchar |--  |string |--    |
+ |char |--  |string |--    |
+ |text |--  |string |--    |
     
 举例：
 
@@ -111,7 +135,11 @@ thrift命令行工具，用于 thrift IDL .go 文件生产
     - 优化生成数据表反转代码格式化(go fmt file.)
 * 2017.12
     - 增加`new`创新新项目命令
-    
+* 2018.2
+    - 优化生成MYSQL类型
+    - 增加对应生成映射说明
+    - 优化ATC框架项目生成
+
 # LICENSE
 
 ATC is Licensed under the Apache License, Version 2.0 (the "License")
