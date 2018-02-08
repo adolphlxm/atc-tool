@@ -146,12 +146,12 @@ log.output = stdout
 ;   写入file文件方式时需要填写该项
 ;   指定一个日志写入文件路径
 log.dir = ./log/test.log
-; Log日志文件最大尺寸,单位：字节
-log.maxsize = 1024
-; Log日志文件缓冲区，满了后会执行flush刷入磁盘
-log.buffersize = 1024
+; Log日志文件最大尺寸,单位：字节, 默认1.7G
+log.maxsize = 1887436800
+; Log日志文件缓冲区，满了后会执行flush刷入磁盘, 默认256KB
+log.buffersize = 262,144
 ; Log日志定时刷新时间, 单位: 秒
-;   默认 : 30
+;   默认 : 10
 log.flushinterval = 10
 
 ; 数据库
