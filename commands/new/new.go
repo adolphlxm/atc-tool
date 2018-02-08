@@ -41,6 +41,7 @@ import (
 	_ "{{.Appname}}/api"
 	"github.com/adolphlxm/atc"
 )
+
 func main() {
 	atc.Run()
 }
@@ -50,7 +51,7 @@ var config = `
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; 开发模式                                           ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-[dev]
+[local]
 ; DEBUG模式
 app.debug = true
 ; 项目名称
@@ -129,14 +130,14 @@ thrift.client.timeout = 10
 ;
 log.support = true
 ; Log级别
-;   LevelTrace = iota
-;   LevelInfo
-;   LevelNotice
-;   LevelWarn
-;   LevelError
-;   LevelFatal
-;   LevelDebug
-log.level = 0
+;LevelFatal
+;LevelError
+;LevelWarn
+;LevelNotice
+;LevelInfo
+;LevelTrace
+;LevelDebug
+log.level = LevelFatal
 ; Log输出
 ;   stdout : 控制台输出
 ;   file : 文件输出
@@ -144,9 +145,15 @@ log.output = stdout
 ; Log指定日志路径文件
 ;   写入file文件方式时需要填写该项
 ;   指定一个日志写入文件路径
-log.file = ./log/test.log
-; Log文件的模式和权限位
-log.perm = 0660
+log.dir = ./log/test.log
+; Log日志文件最大尺寸,单位：字节
+log.maxsize = 1024
+; Log日志文件缓冲区，满了后会执行flush刷入磁盘
+log.buffersize = 1024
+; Log日志定时刷新时间, 单位: 秒
+;   默认 : 30
+log.flushinterval = 10
+
 ; 数据库
 ; 是否支持ORM数据库引擎
 ;   - true : 支持
@@ -179,6 +186,43 @@ orm.atc_ram.host = 127.0.0.1:3306
 orm.atc_ram.user = root
 orm.atc_ram.password = 123456
 orm.atc_ram.dbname = atc_ram
+; 生产队列
+;   - true : 支持
+;   - false: 不支持
+queue.publisher.support = false
+queue.publisher.aliasnames = p1,p2
+queue.publisher.p1.driver = redis
+queue.publisher.p1.addrs = redis://127.0.0.1:6379
+;   - redis
+;   - nats
+queue.publisher.drivername = redis
+queue.publisher.addrs = redis://127.0.0.1:6379
+; 消费队列
+;   - true : 支持
+;   - false: 不支持
+queue.consumer.support = false
+queue.consumer.aliasnames = c1,c2
+queue.consumer.c1.driver = redis
+queue.consumer.c1.addrs = redis://127.0.0.1:6379
+
+; cacahe
+;   格式: 别名
+;   e.g. m1,r1
+cache.aliasnames = mem,redis
+cache.support = false
+cache.mem.addrs = memcache://127.0.0.1:11211
+cache.redis.addrs = redis://:123456@127.0.0.1:6379/0?maxIdle=10&maxActive=10&idleTimeout=3
+
+; mongodb
+;   格式: 别名
+;   e.g. m1,r1
+mgo.aliasnames = m
+mgo.support = false
+mgo.m.addrs = mongodb://127.0.0.1:27017
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; 测试模式                                           ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[dev]
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; 生产模式                                           ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
