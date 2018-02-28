@@ -39,6 +39,7 @@ The command "new" creates a folder named [appname] and generates the following s
 var atcgo = `package main
 import (
 	_ "{{.Appname}}/api"
+	_ "{{.Appname}}/grpc"
 	"github.com/adolphlxm/atc"
 )
 
@@ -219,6 +220,10 @@ cache.redis.addrs = redis://:123456@127.0.0.1:6379/0?maxIdle=10&maxActive=10&idl
 mgo.aliasnames = m
 mgo.support = false
 mgo.m.addrs = mongodb://127.0.0.1:27017
+
+; pgrpc
+grpc.support = true
+grpc.addrs = grpc://127.0.0.1:50005
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; 测试模式                                           ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -290,6 +295,92 @@ func init() {
 }
 `
 
+var helloworld = `syntax = "proto3";
+
+package helloworld;
+
+// The greeter service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}
+`
+
+var grpcservice = `package gservice
+import (
+	"context"
+	pb "{{.Appname}}/grpc/proto/helloworld"
+)
+// 简单的GRPC服务
+type Gserver struct {}
+
+func (s *Gserver) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
+}
+`
+
+var grpregisters = `package grpc
+import (
+	"github.com/adolphlxm/atc"
+	"{{.Appname}}/grpc/gservice"
+	pb "{{.Appname}}/grpc/proto/helloworld"
+)
+func init() {
+  // atc.GetGrpcServer() 获取grpc注册服务
+	pb.RegisterGreeterServer(atc.GetGrpcServer(), &gservice.Gserver{})
+}
+`
+
+var grpcclient = `package main
+
+//client.go
+
+import (
+	"log"
+	"os"
+
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+	pb "{{.Appname}}/grpc/proto/helloworld"
+)
+
+const (
+	address     = "127.0.0.1:50005"
+	defaultName = "world"
+)
+
+
+func main() {
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		log.Fatal("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewGreeterClient(conn)
+
+	name := defaultName
+	if len(os.Args) >1 {
+		name = os.Args[1]
+	}
+	r, err := c.SayHello(context.Background(), &pb.HelloRequest{Name: name})
+	if err != nil {
+		log.Fatal("could not greet: %v", err)
+	}
+	log.Printf("Greeting: %s", r.Message)
+
+}
+`
+
 func init() {
 	commands.Register(CmdNew)
 	//_, file, _, _ := runtime.Caller(1)
@@ -339,14 +430,33 @@ func Run(cmd *commands.Command, args []string) int {
 	os.Mkdir(path.Join(apppath,"api"),0755)
 	utils.WriteToFile(path.Join(apppath,"api","api.go"),restful_api)
 	utils.WriteToFile(path.Join(apppath,"api","routers.go"),restful_routers)
-	// Create src/model
+	// Create model
 	os.Mkdir(path.Join(apppath, "model"),0755)
-	// Create src/service
+	// Create service
 	os.Mkdir(path.Join(apppath, "service"),0755)
-	// Create src/thrift
+	// Create thrift
 	os.Mkdir(path.Join(apppath, "thrift"),0755)
 	os.Mkdir(path.Join(apppath, "thrift","gen-go"),0755)
 	os.Mkdir(path.Join(apppath, "thrift","idl"),0755)
+	// Create grpc
+	os.Mkdir(path.Join(apppath, "grpc"),0755)
+	utils.WriteToFile(path.Join(apppath,"grpc", "registers.go"), strings.Replace(grpregisters,"{{.Appname}}",packpath,-1))
+
+	os.Mkdir(path.Join(apppath, "grpc", "proto"),0755)
+	os.Mkdir(path.Join(apppath, "grpc", "proto", "helloworld"),0755)
+	utils.WriteToFile(path.Join(apppath,"grpc", "proto", "helloworld", "helloworld.proto"),helloworld)
+
+	os.Mkdir(path.Join(apppath, "grpc", "gservice"),0755)
+	utils.WriteToFile(path.Join(apppath,"grpc", "gservice", "server.go"), strings.Replace(grpcservice,"{{.Appname}}",packpath,-1))
+
+	_, err = utils.ExeCmd("protoc", "--go_out=plugins=grpc:.", apppath + "/grpc/proto/helloworld/helloworld.proto")
+	if err != nil {
+		logs.Errorf("cmd err:%s", err.Error())
+	}
+
+	os.Mkdir(path.Join(apppath, "grpc", "examples"),0755)
+	utils.WriteToFile(path.Join(apppath,"grpc", "examples", "client.go"), strings.Replace(grpcclient,"{{.Appname}}",packpath,-1))
+
 	// Create atc.go
 	utils.WriteToFile(path.Join(apppath, apppath + ".go"),strings.Replace(atcgo,"{{.Appname}}",packpath,-1))
 
