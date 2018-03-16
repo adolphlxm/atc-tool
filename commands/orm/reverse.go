@@ -10,7 +10,6 @@ import (
 	"github.com/adolphlxm/atc-tool/commands"
 	"github.com/adolphlxm/atc-tool/utils"
 
-	"encoding/json"
 	"github.com/adolphlxm/atc/logs"
 	"github.com/adolphlxm/atc/orm"
 	_ "github.com/adolphlxm/atc/orm/xorm"
@@ -85,14 +84,11 @@ func Run(cmd *commands.Command, args []string) int {
 		DbName:   source2[1][:i1],
 		LogLevel: "LOG_DEBUG",
 	}
-	cfJson, err := json.Marshal(cf)
-	if err != nil {
-		logs.Error("datasourceName json err :%v", err.Error())
-		return 1
-	}
 
 	db, _ = orm.NewOrm("xorm")
-	if err := db.Open(cf.DbName, string(cfJson)); err != nil {
+	dns := cf.Driver + "://" + cf.User + ":" + cf.Password + "@tpc(" + cf.Host + ")/?db=" + cf.DbName + "&charset=utf8"
+	db.SetLevel(cf.DbName, "LOG_DEBUG")
+	if err := db.Open(cf.DbName, []string{dns}); err != nil {
 		//commands.Logger.Error("init database orm err :%v", err.Error())
 		return 1
 	}

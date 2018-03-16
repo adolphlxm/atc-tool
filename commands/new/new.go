@@ -31,6 +31,7 @@ The command "new" creates a folder named [appname] and generates the following s
 │    ├── gen-go [存放Thrift 生成 go文件目录]
 │    ├── ...(.go)
 │    └── router.go [路由文件]
+│── grpc [RPC]
 └── atc.go [运行主程序文件]
 `,
 	Run: Run,
@@ -167,26 +168,13 @@ orm.support = true
 ;   LOG_INFO
 ;   LOG_DEBUG
 orm.log.level = LOG_DEBUG
-; 连接池的空闲数大小
-orm.maxidleconns =
-; 最大打开的连接数
-orm.maxopenconns =
-; 定时监测数据库连接是否鲜活
-;   单位: 秒
-;   注意: 某些数据库有连接超时设置的，可以通过起一个定期Ping的Go程来保持连接鲜活。
-;   默认值: 30
-orm.pingtime = 180
+
 ; 数据库名
-;   格式: 别名
-;   e.g. test_w:写库,test_r:写库
+;   格式: 别名, 多个别名请使用逗号隔开
+;   e.g. test1,test2...
 orm.aliasnames = atc_ram
-; 数据库配置
-;   e.g. dbs.别名.类型 = 值
-orm.atc_ram.driver = mysql
-orm.atc_ram.host = 127.0.0.1:3306
-orm.atc_ram.user = root
-orm.atc_ram.password = 123456
-orm.atc_ram.dbname = atc_ram
+; 数据库配置，支持主从，使用逗号隔开
+orm.atc_ram = mysql://root:123456@127.0.0.1:3306/?db=test&charset=utf8&maxidleconns=1&maxopenconns=1&pingtime=30,mysql://root:123456@
 ; 生产队列
 ;   - true : 支持
 ;   - false: 不支持
