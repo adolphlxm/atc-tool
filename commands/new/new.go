@@ -59,8 +59,6 @@ app.debug = true
 ; 项目名称
 app.name = ATC-ram
 
-; 错误码配置文件
-error.file = ./conf/error.ini
 ; HTTP/Websocket
 ; 是否支持HTTP/Websocket通信
 ;   - true : 支持
@@ -132,13 +130,8 @@ thrift.client.timeout = 10
 ;
 log.support = true
 ; Log级别
-;LevelFatal
-;LevelError
-;LevelWarn
-;LevelNotice
-;LevelInfo
-;LevelTrace
-;LevelDebug
+;   LevelFatal > LevelError > LevelWarn > LevelNotice > LevelInfo > LevelTrace
+;   LevelDebug(调试)
 log.level = LevelFatal
 ; Log输出
 ;   stdout : 控制台输出
